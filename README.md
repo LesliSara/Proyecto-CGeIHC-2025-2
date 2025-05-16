@@ -87,6 +87,7 @@ Each attraction is inspired by one of the four animated series:
 - **OpenGL + GLUT / FreeGLUT**
 - **C++**
 - **Blender / Sketchfab models**
+- **3ds Max**
 - **Audacity + OpenAL (optional for 3D sound)**
 
 ---
