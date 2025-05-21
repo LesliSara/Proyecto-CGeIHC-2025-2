@@ -14,6 +14,7 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 	width = windowWidth;
 	height = windowHeight;
 	muevex = 2.0f;
+	muevez = 2.0f;
 	for (size_t i = 0; i < 1024; i++)
 	{
 		keys[i] = 0;
@@ -21,10 +22,10 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 }
 int Window::Initialise()
 {
-	//Inicialización de GLFW
+	//Inicializaci�n de GLFW
 	if (!glfwInit())
 	{
-		printf("Falló inicializar GLFW");
+		printf("Fall� inicializar GLFW");
 		glfwTerminate();
 		return 1;
 	}
@@ -44,7 +45,7 @@ int Window::Initialise()
 		glfwTerminate();
 		return 1;
 	}
-	//Obtener tamaño de Buffer
+	//Obtener tama�o de Buffer
 	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
 	//asignar el contexto
@@ -59,18 +60,18 @@ int Window::Initialise()
 
 	if (glewInit() != GLEW_OK)
 	{
-		printf("Falló inicialización de GLEW");
+		printf("Fall� inicializaci�n de GLEW");
 		glfwDestroyWindow(mainWindow);
 		glfwTerminate();
 		return 1;
 	}
 
 	glEnable(GL_DEPTH_TEST); //HABILITAR BUFFER DE PROFUNDIDAD
-							 // Asignar valores de la ventana y coordenadas
-							 
-							 //Asignar Viewport
+	// Asignar valores de la ventana y coordenadas
+
+	//Asignar Viewport
 	glViewport(0, 0, bufferWidth, bufferHeight);
-	//Callback para detectar que se está usando la ventana
+	//Callback para detectar que se est� usando la ventana
 	glfwSetWindowUserPointer(mainWindow, this);
 }
 
@@ -104,13 +105,61 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	if (key == GLFW_KEY_Y)
+	if (key == GLFW_KEY_T)
 	{
-		theWindow-> muevex += 1.0;
+		theWindow->muevex += 1.0;
+		if (action == GLFW_PRESS)
+		{
+			theWindow->keys[key] = true;
+			theWindow->movimientoLink = 1;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			theWindow->keys[key] = false;
+			theWindow->movimientoLink = 0;
+		}
 	}
-	if (key == GLFW_KEY_U)
+	if (key == GLFW_KEY_G)
 	{
-		theWindow-> muevex -= 1.0;
+		theWindow->muevex -= 1.0;
+		if (action == GLFW_PRESS)
+		{
+			theWindow->keys[key] = true;
+			theWindow->movimientoLink = 1;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			theWindow->keys[key] = false;
+			theWindow->movimientoLink = 0;
+		}
+	}
+	if (key == GLFW_KEY_H)
+	{
+		theWindow->muevez += 1.0;
+		if (action == GLFW_PRESS)
+		{
+			theWindow->keys[key] = true;
+			theWindow->movimientoLink = 1;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			theWindow->keys[key] = false;
+			theWindow->movimientoLink = 0;
+		}
+	}
+	if (key == GLFW_KEY_F)
+	{
+		theWindow->muevez -= 1.0;
+		if (action == GLFW_PRESS)
+		{
+			theWindow->keys[key] = true;
+			theWindow->movimientoLink = 1;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			theWindow->keys[key] = false;
+			theWindow->movimientoLink = 0;
+		}
 	}
 
 
