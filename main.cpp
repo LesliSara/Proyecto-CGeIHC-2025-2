@@ -38,7 +38,10 @@ float movCoche;
 float movOffset;
 float rotllanta;
 float rotllantaOffset;
+float rotExtrLink;
+float rotExtrLinkOffset;
 bool avanza;
+bool limiteExtrLink;
 float toffsetflechau = 0.0f;
 float toffsetflechav = 0.0f;
 float toffsetnumerou = 0.0f;
@@ -143,7 +146,7 @@ Material Material_brillante;
 Material Material_opaco;
 
 
-Material Material_link;
+Material Material_WindWaker;
 
 //Sphere cabeza = Sphere(0.5, 20, 20);
 GLfloat deltaTime = 0.0f;
@@ -468,7 +471,7 @@ int main()
 
 	skybox = Skybox(skyboxFaces);
 
-	Material_link = Material(0.0f, 1);
+	Material_WindWaker = Material(0.0f, 1);
 
 
 	//luz direccional, sólo 1 y siempre debe de existir
@@ -489,7 +492,10 @@ int main()
 	movOffset = 0.01f;
 	rotllanta = 0.0f;
 	rotllantaOffset = 10.0f;
+	rotExtrLink = 0.0f;
+	rotExtrLinkOffset = 2.5f;
 	cambio = true;
+	limiteExtrLink = true;
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -503,15 +509,21 @@ int main()
 
 		angulovaria += 0.5f * deltaTime;
 
-		if (avanza) {
-			if (movCoche < 100.0f) {  // Nuevo límite en Z
-				movCoche += movOffset * deltaTime;
-				rotllanta -= rotllantaOffset * deltaTime;
+		//ANIMACION DE LAS EXTREMIDADES DE LINK
+		if (mainWindow.getmovimientoLink() == 1) {
+			if (limiteExtrLink)
+			{
+				if (rotExtrLink > -40.0f)
+					rotExtrLink -= rotExtrLinkOffset * deltaTime;
+				else
+					limiteExtrLink = false;
 			}
-			else {
-				// Se detiene al llegar a 100.0f
-				avanza = false;
-				movCoche = 100.0f; // Asegura que se quede exacto en el límite
+			else
+			{
+				if (rotExtrLink < 40.0f)
+					rotExtrLink += rotExtrLinkOffset * deltaTime;
+				else
+					limiteExtrLink = true;
 			}
 		}
 
@@ -721,51 +733,54 @@ int main()
 
 
 
-				// LINK
+		// LINK
 		{
 			// ---------- LINK ----------
 
-		//Cuerpo
+			//Cuerpo
 			model = glm::mat4(1.0);
-			model = glm::translate(model, glm::vec3(13.0f, 3.85f, -27.0f));
-			//model = glm::translate(model, glm::vec3(0.0f, 3.85f, 0.0f));
+			model = glm::translate(model, glm::vec3(0.0f + mainWindow.getmuevex(), 3.85f, 0.0f + mainWindow.getmuevez()));
 			model = glm::scale(model, glm::vec3(2.2f, 2.2f, 2.2f));
 			model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 			posInicial = model;
 			modelaux = model;
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			CuerpoLink_M.RenderModel();
 			//Pierna derecha
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(-0.437f, -0.93f, -0.045f));
+			model = glm::rotate(model, rotExtrLink * toRadians, glm::vec3(-1.0f, 0.0f, 0.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			PiernaDerLink_M.RenderModel();
 			//Pierna izquierda
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(0.437f, -0.93f, -0.045f));
+			model = glm::rotate(model, rotExtrLink * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			PiernaIzqLink_M.RenderModel();
 			//Vaina
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.7f));
 			model = glm::rotate(model, 30 * toRadians, glm::vec3(0.0f, 0.0, 1.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			VainaLink_M.RenderModel();
 			//Brazo derecho
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(-0.78f, 0.85f, -0.13f));
+			model = glm::rotate(model, rotExtrLink * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			BrazoDerLink_M.RenderModel();
 			//Brazo izquierdo
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(0.8f, 0.865f, -0.13f));
+			model = glm::rotate(model, rotExtrLink * toRadians, glm::vec3(-1.0f, 0.0f, 0.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			BrazoIzqLink_M.RenderModel();
 			//Cabeza
 			model = posInicial;
@@ -774,16 +789,17 @@ int main()
 			modelaux = model;
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			CabezaLink_M.RenderModel();
 			glDisable(GL_BLEND);
 			//Sombrero
 			model = modelaux;
 			model = glm::translate(model, glm::vec3(0.0f, 1.4f, -0.02f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Material_link.UseMaterial(uniformSpecularIntensity, uniformShininess);
+			Material_WindWaker.UseMaterial(uniformSpecularIntensity, uniformShininess);
 			SombreroLink_M.RenderModel();
 		}
+
 		// Micheladas
 		{
 			model = glm::mat4(1.0);
