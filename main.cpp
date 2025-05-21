@@ -51,6 +51,12 @@ float angulovaria = 0.0f;
 bool cambio;
 int aux;
 
+float movMandroid = -107.782f;
+float movBillyBot = 30.623f;
+bool cambioMandroid;
+bool cambioBillyBot;
+
+
 Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
@@ -134,6 +140,35 @@ Model Pork_Cassidy_M;
 Model Teri_M;
 Model Puerta_M;
 Model Letrero_M;
+
+// BillyBot
+Model BillyBotAbdomen_M;
+Model BillyBotAntena_M;
+Model BillyBotBrazoDerecho_M;
+Model BillyBotBrazoIzquierdo_M;
+Model BillyBotCuerpo_M;
+Model BillyBotNariz_M;
+Model BillyBotOjoIzquierdo_M;
+Model BillyBotPiernaDerecha_M;
+Model BillyBotPiernaIzquierda_M;
+Model BillyBotPinzaSuperiorIzquierda_M;
+Model BillyBotPinzaSuperiorDerecha_M;
+Model BillyBotPinzaInferiorIzquierda_M;
+Model BillyBotPinzaInferiorDerecha_M;
+
+
+//Mandroid
+Model MandroidCuerpo_M;
+Model MandroidCabeza_M;
+Model MandroidBrazoIzquierdo_M;
+Model MandroidBrazoDerecho_M;
+Model MandroidManoDerecha_M;
+Model MandroidManoIzquierda_M;
+Model MandroidPieIzquierdo_M;
+Model MandroidPieDerecho_M;
+Model MandroidPiernaIzquierda_M;
+Model MandroidPiernaDerecha_M;
+
 
 
 Model _M;
@@ -448,6 +483,70 @@ int main()
 	Teri_M = Model();
 	Teri_M.LoadModel("Models/Teri/Teri.obj");
 
+	// Billy Bot
+	BillyBotCuerpo_M = Model();
+	BillyBotCuerpo_M.LoadModel("Models/BillyBot/BillyBot/Cuerpo/cuerpo.obj");
+
+	BillyBotAbdomen_M = Model();
+	BillyBotAbdomen_M.LoadModel("Models/BillyBot/BillyBot/Abdomen/abdomen.obj");
+
+	BillyBotAntena_M = Model();
+	BillyBotAntena_M.LoadModel("Models/BillyBot/BillyBot/Antena/antena.obj");
+
+	BillyBotBrazoDerecho_M = Model();
+	BillyBotBrazoDerecho_M.LoadModel("Models/BillyBot/BillyBot/Brazos/brazoDerecho.obj");
+	BillyBotBrazoIzquierdo_M = Model();
+	BillyBotBrazoIzquierdo_M.LoadModel("Models/BillyBot/BillyBot/Brazos/brazoIzquierdo.obj");
+
+	BillyBotNariz_M = Model();
+	BillyBotNariz_M.LoadModel("Models/BillyBot/BillyBot/Nariz/nariz.obj");
+	BillyBotOjoIzquierdo_M = Model();
+	BillyBotOjoIzquierdo_M.LoadModel("Models/BillyBot/BillyBot/OjoIzquierdo/ojoIzquierdo.obj");
+	BillyBotPiernaDerecha_M = Model();
+	BillyBotPiernaDerecha_M.LoadModel("Models/BillyBot/BillyBot/Piernas/piernaDerecha.obj");
+
+	BillyBotPiernaIzquierda_M = Model();
+	BillyBotPiernaIzquierda_M.LoadModel("Models/BillyBot/BillyBot/Piernas/piernaIzquierda.obj");
+	BillyBotPinzaSuperiorIzquierda_M = Model();
+	BillyBotPinzaSuperiorIzquierda_M.LoadModel("Models/BillyBot/BillyBot/Pinzas/pinzaIzquierdaSuperior.obj");
+	BillyBotPinzaSuperiorDerecha_M = Model();
+	BillyBotPinzaSuperiorDerecha_M.LoadModel("Models/BillyBot/BillyBot/Pinzas/pinzaDerechaSuperior.obj");
+	BillyBotPinzaInferiorIzquierda_M = Model();
+	BillyBotPinzaInferiorIzquierda_M.LoadModel("Models/BillyBot/BillyBot/Pinzas/pinzaIzquierdaInferior.obj");
+
+	BillyBotPinzaInferiorDerecha_M = Model();
+	BillyBotPinzaInferiorDerecha_M.LoadModel("Models/BillyBot/BillyBot/Pinzas/pinzaDerechaInferior.obj");
+
+	// Mandroid
+	MandroidCuerpo_M = Model();
+	MandroidCuerpo_M.LoadModel("Models/Mandroid/Mandroid/Cuerpo/cuerpo.obj");
+
+	MandroidCabeza_M = Model();
+	MandroidCabeza_M.LoadModel("Models/Mandroid/Mandroid/Cara/cabeza.obj");
+
+	MandroidBrazoDerecho_M = Model();
+	MandroidBrazoDerecho_M.LoadModel("Models/Mandroid/Mandroid/Brazos/brazoDerecho.obj");
+	MandroidBrazoIzquierdo_M = Model();
+	MandroidBrazoIzquierdo_M.LoadModel("Models/Mandroid/Mandroid/Brazos/brazoIzquierdo.obj");
+
+	MandroidPiernaDerecha_M = Model();
+	MandroidPiernaDerecha_M.LoadModel("Models/Mandroid/Mandroid/Piernas/piernaDerecha.obj");
+	MandroidPiernaIzquierda_M = Model();
+	MandroidPiernaIzquierda_M.LoadModel("Models/Mandroid/Mandroid/Piernas/piernaIzquierda.obj");
+
+	MandroidManoIzquierda_M = Model();
+	MandroidManoIzquierda_M.LoadModel("Models/Mandroid/Mandroid/Manos/manoIzquierda.obj");
+	MandroidManoDerecha_M = Model();
+	MandroidManoDerecha_M.LoadModel("Models/Mandroid/Mandroid/Manos/manoDerecha.obj");
+
+	MandroidPieIzquierdo_M = Model();
+	MandroidPieIzquierdo_M.LoadModel("Models/Mandroid/Mandroid/Pies/pieIzquierdo.obj");
+
+	MandroidPieDerecho_M = Model();
+	MandroidPieDerecho_M.LoadModel("Models/Mandroid/Mandroid/Pies/pieDerecho.obj");
+
+
+
 	Puerta_M = Model();
 	Puerta_M.LoadModel("Models/puerta.obj");
 	Letrero_M = Model();
@@ -496,6 +595,9 @@ int main()
 	rotExtrLinkOffset = 2.5f;
 	cambio = true;
 	limiteExtrLink = true;
+	cambioMandroid = true;
+	cambioBillyBot = true;
+
 
 	////Loop mientras no se cierra la ventana
 	while (!mainWindow.getShouldClose())
@@ -563,6 +665,9 @@ int main()
 		glm::mat4 posInicial(1.0);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
+		glm::mat4 modelBillyBot(1.0);
+
+
 		//Este se hace dentro del while
 		glm::vec2 toffset = glm::vec2(0.0f, 0.0f);
 
@@ -579,28 +684,28 @@ int main()
 
 		//Puestos de comida
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(20.0f, 5.52f, 20.0f));
+		model = glm::translate(model, glm::vec3(-140.0f, 5.52f, 150.0f));
 		model = glm::scale(model, glm::vec3(1.35f, 1.35f, 1.35f));
 		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		HotDog_M.RenderModel();
 
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-20.0f, 5.52f, 20.0f));
+		model = glm::translate(model, glm::vec3(240.0f, 5.52f, 135.0f));
 		model = glm::scale(model, glm::vec3(1.35f, 1.35f, 1.35f));
 		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Nieves_M.RenderModel();
 
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(-20.0f, 3.2f, 0.0f));
+		model = glm::translate(model, glm::vec3(-40.0f, 3.2f, -10.0f));
 		model = glm::scale(model, glm::vec3(1.35f, 1.35f, 1.35f));
 		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Cotton_Candy_M.RenderModel();
 
 		model = glm::mat4(1.0);
-		model = glm::translate(model, glm::vec3(20.0f, 5.6f, 0.0f));
+		model = glm::translate(model, glm::vec3(70.0f, 5.6f, -10.0f));
 		model = glm::scale(model, glm::vec3(1.35f, 1.35f, 1.35f));
 		//model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
@@ -1160,6 +1265,208 @@ int main()
 		model = glm::scale(model, glm::vec3(0.65f, 0.65f, 0.65f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Carrie_Krueger_M.RenderModel();
+
+		//BillyBot
+		{
+			model = glm::mat4(1.0);
+			model = glm::translate(model, glm::vec3(231.25f, -2.1f, movBillyBot));
+			if (cambioBillyBot) {
+				if (movBillyBot <= 116.593f) {
+
+					movBillyBot += 0.01f;
+				}
+				else {
+					cambioBillyBot = false;
+				}
+			}
+			else {
+				if (movBillyBot >= 30.623f) {
+					movBillyBot -= 0.01f;
+					model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, -1.0f, 0.0f));
+				}
+				else {
+					cambioBillyBot = true;
+				}
+			}
+			model = glm::scale(model, glm::vec3(1.2f, 1.2f, 1.2f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotCuerpo_M.RenderModel();
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(0.0f, 2.623f, 1.148f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotAbdomen_M.RenderModel();
+			model = modelaux;
+
+
+			// Brazos y Pinzas
+			{
+				modelBillyBot = model;
+				model = glm::translate(model, glm::vec3(-0.91f, 2.557f, -0.804f));
+				model = glm::rotate(model, 2.0f * angulovaria * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotBrazoDerecho_M.RenderModel();
+
+
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(-1.593f, -0.004f, -0.027f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotPinzaSuperiorDerecha_M.RenderModel();
+				model = modelaux;
+				model = glm::translate(model, glm::vec3(-1.583f, 0.001f, -0.012f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotPinzaInferiorDerecha_M.RenderModel();
+				model = modelBillyBot;
+
+
+				modelBillyBot = model;
+				model = glm::translate(model, glm::vec3(0.935f, 2.557f, -0.804f));
+				model = glm::rotate(model, 2.0f * angulovaria * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotBrazoIzquierdo_M.RenderModel();
+
+
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(1.569f, 0.009f, -0.018f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotPinzaSuperiorIzquierda_M.RenderModel();
+				model = modelaux;
+
+
+				model = glm::translate(model, glm::vec3(1.572f, 0.008f, 0.01f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				BillyBotPinzaInferiorIzquierda_M.RenderModel();
+				model = modelBillyBot;
+			}
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(0.628f, 6.28f, 3.425f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotNariz_M.RenderModel();
+			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(0.498f, 6.755f, 0.574f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotOjoIzquierdo_M.RenderModel();
+			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(-0.6f, 0.034f, -0.922f));
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.5f * sin(angulovaria * 0.1f)));
+			model = glm::translate(model, glm::vec3(0.0f, abs(0.5f * cos(angulovaria * 0.1f)), 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotPiernaDerecha_M.RenderModel();
+			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(0.656f, 0.034f, -0.834f));
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.5f * sin((angulovaria * 0.1f) + (180.0 * toRadians))));
+			model = glm::translate(model, glm::vec3(0.0f, abs(0.5f * cos(angulovaria * 0.1f)), 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotPiernaIzquierda_M.RenderModel();
+			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(0.0f, 8.188f, -1.285f));
+			model = glm::rotate(model, 2.0f * angulovaria * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			BillyBotAntena_M.RenderModel();
+			model = modelaux;
+
+		}
+
+		{}
+
+
+		//Mandroid
+		{
+			model = glm::mat4(1.0);
+			model = glm::translate(model, glm::vec3(-86.99f, 1.494f, movMandroid));
+			if (cambioMandroid) {
+				if (movMandroid <= -39.049f) {
+					movMandroid += 0.01f;
+				}
+				else {
+					cambioMandroid = false;
+				}
+			}
+			else {
+				if (movMandroid >= -107.782f) {
+					movMandroid -= 0.01f;
+					model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, -1.0f, 0.0f));
+				}
+				else {
+					cambioMandroid = true;
+				}
+			}
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			MandroidCuerpo_M.RenderModel();
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(-0.004f, 0.986f, 0.025f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			MandroidCabeza_M.RenderModel();
+			model = modelaux;
+
+
+			// Brazos y Manos
+			{
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(-0.931f, 0.76f, -0.493f));
+				model = glm::rotate(model, 30 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+				model = glm::rotate(model, 0.5f * sin(angulovaria * 0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidBrazoDerecho_M.RenderModel();
+
+				model = glm::translate(model, glm::vec3(-1.858f, 0.043f, -0.031f));
+				//modelaux = model;
+				model = glm::rotate(model, angulovaria, glm::vec3(1.0f, 0.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidManoDerecha_M.RenderModel();
+				model = modelaux;
+
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(0.935f, 0.759f, -0.455f));
+				model = glm::rotate(model, 30 * toRadians, glm::vec3(0.0f, 0.0f, -1.0f));
+				model = glm::rotate(model, 0.5f * sin(angulovaria * 0.1f + 45 * toRadians), glm::vec3(0.0f, -1.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidBrazoIzquierdo_M.RenderModel();
+
+				model = glm::translate(model, glm::vec3(1.843f, -0.021f, 0.038f));
+				//modelaux = model;
+				model = glm::rotate(model, angulovaria, glm::vec3(1.0f, 0.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidManoIzquierda_M.RenderModel();
+				model = modelaux;
+			}
+
+			//Piernas y pies
+			{
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(-0.955f, -0.766f, -0.248f));
+				model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.5f * sin(angulovaria * 0.1f)));
+				model = glm::translate(model, glm::vec3(0.0f, abs(0.5f * cos(angulovaria * 0.1f)), 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidPiernaDerecha_M.RenderModel();
+
+				model = glm::translate(model, glm::vec3(0.0, -1.842f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidPieDerecho_M.RenderModel();
+				model = modelaux;
+
+				modelaux = model;
+				model = glm::translate(model, glm::vec3(0.849f, -0.753f, -0.248f));
+				model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.5f * sin((angulovaria * 0.1f) + (180.0 * toRadians))));
+				model = glm::translate(model, glm::vec3(0.0f, abs(0.5f * cos(angulovaria * 0.1f)), 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidPiernaIzquierda_M.RenderModel();
+
+				model = glm::translate(model, glm::vec3(0.0f, -1.855f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				MandroidPieIzquierdo_M.RenderModel();
+				model = modelaux;
+			}
+		}
 
 		//Puerta
 		model = glm::mat4(1.0);
