@@ -31,6 +31,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
+#include "animaciones_ferb.h"
 const float toRadians = 3.14159265f / 180.0f;
 
 //variables para animación
@@ -55,6 +56,34 @@ float movMandroid = -107.782f;
 float movBillyBot = 30.623f;
 bool cambioMandroid;
 bool cambioBillyBot;
+
+// ------ ANIMACIÓN DE DADOS ------
+glm::vec3 posDado1(-6.75f, 4.304f, 2.008f);
+glm::vec3 posDado2(-6.75f, 4.304f, 3.5f);
+glm::vec3 rotDado1(0.0f); // en grados
+glm::vec3 rotDado2(0.0f);
+float velYDados = 10.0f;
+int rebotesDados = 0;
+bool dadosLanzados = false;
+
+//------- ANIMACIÓN DE LA HOZ ------
+
+static float avanceHoz = 0.0f;
+static float rotacionHoz = 0.0f;
+static float tiempoImpactoHoz = 0.0f;
+static bool lanzandoHoz = false;
+static bool impactoHoz = false;
+
+// ------ ANIMACIÓN BOMBA (BOLA DE BOLICHE) ------
+glm::vec3 posBomba(3.5f, -5.2f, 30.60f); // posición inicial (ajusta según tu pista)
+glm::vec3 velBomba(0.0f, 0.0f, 0.0f);
+float velInicialBomba = -35.0f; // velocidad en z (hacia los pinos)
+float velYBomba = 0.0f;
+float gravedadBomba = -40.0f;
+int rebotesBomba = 0;
+bool bombaLanzada = false;
+
+
 
 
 Window mainWindow;
@@ -169,6 +198,49 @@ Model MandroidPieDerecho_M;
 Model MandroidPiernaIzquierda_M;
 Model MandroidPiernaDerecha_M;
 
+//********************************MODELOS PHINEAS Y FERB***********************************
+//Modelos Phineas y Ferb
+Model edificioDoof_M;
+Model Ferb_M;
+Model Perry_M;
+Model Phineas_M;
+Model Candace_M;
+Model Isabella_M;
+Model Bufard_M;
+Model Baljeet_M;
+Model Doof_M;
+Model Doof_bicep_M;
+Model Doof_brazo_M;
+Model Doof_muneca_M;
+Model topo_machine_M;
+Model planty_M;
+Model ballony_M;
+Model phineasHouse_M;
+Model reja_madera_M;
+Model arbol_phineas_M;
+Model carrusel_M;
+Model carpa_perry_M;
+Model mesa_perry_M;
+Model letrero_perry_juego_M;
+Model techo_carrusel_M;
+Model nave1_M;
+Model nave2_M;
+Model nave3_M;
+Model nave4_M;
+Model nave5_M;
+Model nave6_M;
+Model toilet_phineas_M;
+Model decoracion_M;
+Model puesto_tacos_M;
+Model puesto_miches_M;
+Model Ferb_mano_M;
+Model Phineas_mano_M;
+Model Mazo_M;
+Model carpa_globo_M;
+Model globo_M;
+Model dardo_M;
+Model linea_roja_M;
+Model globo_ponchado_M;
 
 
 Model _M;
@@ -346,6 +418,88 @@ std::string RotarTexto(const std::string& texto) {
 	return texto.substr(1) + texto[0]; // Mueve la primera letra al final
 }
 
+void actualizarAnimacionDados(float deltaTime) {
+	if (!dadosLanzados) return;
+
+	if (rebotesDados > 0) {
+		// Movimiento vertical tipo rebote
+		posDado1.y += velYDados * deltaTime;
+		posDado2.y += velYDados * deltaTime;
+		rotDado1 += glm::vec3(110.0f, 140.0f, 100.0f) * deltaTime;
+		rotDado2 += glm::vec3(120.0f, 135.0f, 80.0f) * deltaTime;
+
+		// Rebote en la "mesa" (y = 4.304)
+		if (posDado1.y <= 4.304f) {
+			posDado1.y = 4.304f;
+			posDado2.y = 4.304f;
+			velYDados *= -0.55f; // rebote con pérdida de energía
+			rebotesDados--;
+		}
+		velYDados -= 18.0f * deltaTime; // gravedad
+	}
+	else {
+		dadosLanzados = false; // Detener cuando termine de rebotar
+	}
+}
+
+void lanzarDados() {
+	if (!dadosLanzados) {
+		posDado1 = glm::vec3(-6.75f, 8.304f, 2.008f); // inicia más arriba para que caigan
+		posDado2 = glm::vec3(-6.75f, 8.304f, 3.5f);
+		rotDado1 = glm::vec3(0.0f);
+		rotDado2 = glm::vec3(0.0f);
+		velYDados = 12.0 + float(rand() % 6); // aleatorio entre 12 y 17
+		rebotesDados = 7;
+		dadosLanzados = true;
+	}
+}
+
+void lanzarHoz() {
+	if (!lanzandoHoz) {
+		lanzandoHoz = true;
+		impactoHoz = false;
+		tiempoImpactoHoz = 0.0f;
+		avanceHoz = 0.0f;
+		rotacionHoz = 0.0f;
+	}
+}
+
+void actualizarHoz(float deltaTime) {
+	if (lanzandoHoz) {
+		if (!impactoHoz) {
+			if (avanceHoz < 50.0f) {
+				avanceHoz += 5.0f * deltaTime;
+				rotacionHoz += 720.0f * deltaTime;
+			}
+			else {
+				tiempoImpactoHoz += deltaTime;
+				if (tiempoImpactoHoz >= 3.0f) {
+					lanzandoHoz = false;
+					impactoHoz = false;
+					tiempoImpactoHoz = 0.0f;
+					avanceHoz = 0.0f;
+					rotacionHoz = 0.0f;
+				}
+				else {
+					impactoHoz = true;
+				}
+			}
+		}
+		else {
+			tiempoImpactoHoz += deltaTime;
+			if (tiempoImpactoHoz >= 3.0f) {
+				lanzandoHoz = false;
+				impactoHoz = false;
+				tiempoImpactoHoz = 0.0f;
+				avanceHoz = 0.0f;
+				rotacionHoz = 0.0f;
+			}
+		}
+	}
+}
+
+
+
 
 
 
@@ -386,7 +540,7 @@ int main()
 
 	HotDog_M = Model();
 	HotDog_M.LoadModel("Models/Food/Carro_Hotdog.obj");
-	Nieves_M = Model();	
+	Nieves_M = Model();
 	Nieves_M.LoadModel("Models/Food/Carro_Helado.obj");
 	Cotton_Candy_M = Model();
 	Cotton_Candy_M.LoadModel("Models/Food/Carro_AlgodonAzucar.obj");
@@ -545,6 +699,92 @@ int main()
 	MandroidPieDerecho_M = Model();
 	MandroidPieDerecho_M.LoadModel("Models/Mandroid/Mandroid/Pies/pieDerecho.obj");
 
+	// ----------------------------------------------------------------------------------------------------------------------------------
+   // ----------------------------------------- UNIVERSO PHINEAS & FERB - MODELOS ------------------------------------------------------
+   // ----------------------------------------------------------------------------------------------------------------------------------
+
+	edificioDoof_M = Model();
+	edificioDoof_M.LoadModel("Models/Ferb/EdificioDoof.obj");
+	Ferb_M = Model();
+	Ferb_M.LoadModel("Models/Ferb/ferb.obj");
+	Perry_M = Model();
+	Perry_M.LoadModel("Models/Ferb/perry.obj");
+	Phineas_M = Model();
+	Phineas_M.LoadModel("Models/Ferb/phineas.obj");
+	Candace_M = Model();
+	Candace_M.LoadModel("Models/Ferb/candace.obj");
+	Isabella_M = Model();
+	Isabella_M.LoadModel("Models/Ferb/isabella.obj");
+	Baljeet_M = Model();
+	Baljeet_M.LoadModel("Models/Ferb/baljeet.obj");
+	Bufard_M = Model();
+	Bufard_M.LoadModel("Models/Ferb/bufard.obj");
+	Doof_M = Model();
+	Doof_M.LoadModel("Models/Ferb/doof.obj");
+	Doof_bicep_M = Model();
+	Doof_bicep_M.LoadModel("Models/Ferb/doof_bicep.obj");
+	Doof_brazo_M = Model();
+	Doof_brazo_M.LoadModel("Models/Ferb/doof_brazo.obj");
+	Doof_muneca_M = Model();
+	Doof_muneca_M.LoadModel("Models/Ferb/doof_muneca.obj");
+	topo_machine_M = Model();
+	topo_machine_M.LoadModel("Models/Ferb/topo_machine.obj");
+	planty_M = Model();
+	planty_M.LoadModel("Models/Ferb/planty.obj");
+	ballony_M = Model();
+	ballony_M.LoadModel("Models/Ferb/balloony.obj");
+	phineasHouse_M = Model();
+	phineasHouse_M.LoadModel("Models/Ferb/phineasHouse.obj");
+	reja_madera_M = Model();
+	reja_madera_M.LoadModel("Models/Ferb/reja_madera.obj");
+	arbol_phineas_M = Model();
+	arbol_phineas_M.LoadModel("Models/Ferb/arbol_phineas.obj");
+	carrusel_M = Model();
+	carrusel_M.LoadModel("Models/Ferb/carrusel.obj");
+	techo_carrusel_M = Model();
+	techo_carrusel_M.LoadModel("Models/Ferb/techo_carrusel.obj");
+	nave1_M = Model();
+	nave1_M.LoadModel("Models/Ferb/nave1.obj");
+	nave2_M = Model();
+	nave2_M.LoadModel("Models/Ferb/nave2.obj");
+	nave3_M = Model();
+	nave3_M.LoadModel("Models/Ferb/nave3.obj");
+	nave4_M = Model();
+	nave4_M.LoadModel("Models/Ferb/nave4.obj");
+	nave5_M = Model();
+	nave5_M.LoadModel("Models/Ferb/nave5.obj");
+	nave6_M = Model();
+	nave6_M.LoadModel("Models/Ferb/nave6.obj");
+	carpa_perry_M = Model();
+	carpa_perry_M.LoadModel("Models/Ferb/carpa_perry.obj");
+	mesa_perry_M = Model();
+	mesa_perry_M.LoadModel("Models/Ferb/mesa_perry.obj");
+	letrero_perry_juego_M = Model();
+	letrero_perry_juego_M.LoadModel("Models/Ferb/letrero_perry_juego.obj");
+	toilet_phineas_M = Model();
+	toilet_phineas_M.LoadModel("Models/Ferb/toilet_phineas.obj");
+	decoracion_M = Model();
+	decoracion_M.LoadModel("Models/Ferb/decoracion.obj");
+	puesto_tacos_M = Model();
+	puesto_tacos_M.LoadModel("Models/Ferb/puesto_tacos.obj");
+	puesto_miches_M = Model();
+	puesto_miches_M.LoadModel("Models/Ferb/puesto_miches.obj");
+	Ferb_mano_M = Model();
+	Ferb_mano_M.LoadModel("Models/Ferb/ferb_mano_der.obj");
+	Phineas_mano_M = Model();
+	Phineas_mano_M.LoadModel("Models/Ferb/phineas_mano_izq.obj");
+	carpa_globo_M = Model();
+	carpa_globo_M.LoadModel("Models/Ferb/carpa_globos.obj");
+	globo_M = Model();
+	globo_M.LoadModel("Models/Ferb/globo.obj");
+	dardo_M = Model();
+	dardo_M.LoadModel("Models/Ferb/dardo.obj");
+	linea_roja_M = Model();
+	linea_roja_M.LoadModel("Models/Ferb/linea_roja.obj");
+	globo_ponchado_M = Model();
+	globo_ponchado_M.LoadModel("Models/Ferb/globo_ponchado.obj");
+	//--------------------------------------------------------------
+
 
 
 	Puerta_M = Model();
@@ -629,6 +869,25 @@ int main()
 			}
 		}
 
+		animaciones_ferb(deltaTime); //animaciones ferb
+
+		// --- Animación de Dados ---
+		actualizarAnimacionDados(deltaTime);
+
+		// --- Animación de Hoz ---
+		actualizarHoz(deltaTime);
+
+
+		// Detección de flanco para la tecla U
+		static bool uKeyPrev = false;
+		bool uKeyNow = mainWindow.getsKeys()[GLFW_KEY_U];
+		if (uKeyNow && !uKeyPrev) {
+			lanzarDados();
+			lanzarHoz();
+		}
+		uKeyPrev = uKeyNow;
+
+
 		//Recibir eventos del usuario
 		glfwPollEvents();
 		camera.keyControl(mainWindow.getsKeys(), deltaTime);
@@ -711,7 +970,7 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Palomitas_M.RenderModel();
 
-		
+
 
 
 		//HOCEEEEES
@@ -777,6 +1036,22 @@ int main()
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			Hoz_M.RenderModel();
 			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(-10.656f, 6.312f, 20.494f));
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -avanceHoz));
+			model = glm::rotate(model, glm::radians(-rotacionHoz), glm::vec3(1.0f, 0.0f, 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			Hoz_M.RenderModel();
+			model = modelaux;
+
+			modelaux = model;
+			model = glm::translate(model, glm::vec3(10.656f, 6.312f, 20.494f));
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -avanceHoz));
+			model = glm::rotate(model, glm::radians(-rotacionHoz), glm::vec3(1.0f, 0.0f, 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			Hoz_M.RenderModel();
+			model = modelaux;
 		}
 
 
@@ -818,19 +1093,28 @@ int main()
 			PelucheD_M.RenderModel();
 			model = modelaux;
 
+			// DADO 1 (ANIMADO)
 			modelaux = model;
-			model = glm::translate(model, glm::vec3(-6.75f, 4.304f, 2.008f));
+			model = glm::translate(model, posDado1);
 			model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+			model = glm::rotate(model, glm::radians(rotDado1.x), glm::vec3(1, 0, 0));
+			model = glm::rotate(model, glm::radians(rotDado1.y), glm::vec3(0, 1, 0));
+			model = glm::rotate(model, glm::radians(rotDado1.z), glm::vec3(0, 0, 1));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			Dado_M.RenderModel();
 			model = modelaux;
 
+			// DADO 2 (ANIMADO)
 			modelaux = model;
-			model = glm::translate(model, glm::vec3(-6.75f, 4.304f, 3.5f));
+			model = glm::translate(model, posDado2);
 			model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+			model = glm::rotate(model, glm::radians(rotDado2.x), glm::vec3(1, 0, 0));
+			model = glm::rotate(model, glm::radians(rotDado2.y), glm::vec3(0, 1, 0));
+			model = glm::rotate(model, glm::radians(rotDado2.z), glm::vec3(0, 0, 1));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			Dado_M.RenderModel();
 			model = modelaux;
+
 
 		}
 
@@ -992,7 +1276,7 @@ int main()
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			BañoH_M.RenderModel();
 		}
-	
+
 
 		//Bancos
 
@@ -1117,7 +1401,7 @@ int main()
 		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Mesa_Banco_M.RenderModel();
-		
+
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(-130.0f, 3.6f, 50.0f));
 		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1129,7 +1413,7 @@ int main()
 		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Mesa_Banco_M.RenderModel();
-		
+
 
 		model = glm::mat4(1.0);
 		model = glm::translate(model, glm::vec3(-110.0f, 3.6f, -100.0f));
@@ -1212,7 +1496,7 @@ int main()
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Mesa_Banco_M.RenderModel();
 
-		
+
 
 		// GUMBALL
 		model = glm::mat4(1.0);
@@ -1567,17 +1851,330 @@ int main()
 
 			model = modelaux;
 			modelaux = model;
-			model = glm::translate(model, glm::vec3(2.5f, -5.9f, 30.60f));
+			model = glm::translate(model, glm::vec3(3.5f, -5.2f, 30.60f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			Bomba_M.RenderModel();
 
 			model = modelaux;
 			modelaux = model;
-			model = glm::translate(model, glm::vec3(-2.5f, -5.9f, 30.60f));
+			model = glm::translate(model, glm::vec3(-3.5f, -5.2f, 30.60f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 			Bomba_M.RenderModel();
 		}
 
+		// ----------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------- UNIVERSO PHINEAS & FERB - RENDERIZACIÓN-------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------
+
+////EDIFICIO DE DOOF
+//model = glm::mat4(1.0);
+//model = glm::translate(model, glm::vec3(-60.0f, 1.2f, 60.0f));
+//model = glm::scale(model, glm::vec3(8.0f));
+//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+//glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+//glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+//Material_opaco.UseMaterial(uniformSpecularIntensity, uniformShininess);
+//edificioDoof_M.RenderModel();
+
+
+
+
+//Ferb
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-45.0f, 0.0f, 30.0f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Ferb_M.RenderModel();
+
+		// Ferb mano derecha 
+		float angleSaludo = sin(ferbHandTime * 0.25f) * 20.0f; // Oscila entre -20 y +20 grados
+		modelaux = model; // guarda el modelo base
+		model = glm::translate(model, glm::vec3(-0.169f, 0.942f, 0.019f)); // punto de unión al hombro
+		model = glm::rotate(model, glm::radians(angleSaludo), glm::vec3(0.0f, 0.0f, 1.0f)); // rotación de saludo
+		//model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Ferb_mano_M.RenderModel();
+
+
+
+
+		// Phineas
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-47.0f, 0.0f, 5.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Phineas_M.RenderModel();
+		// Phineas mano izquierda
+		float anglePhineasSaludo = sin(phineasHandTime * 0.25f) * 25.0f;
+		modelaux = model; // Guarda la transformación base
+		model = glm::translate(model, glm::vec3(0.126f, 0.912f, 0.035f)); // Punto de unión del brazo
+		model = glm::rotate(model, glm::radians(anglePhineasSaludo), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotación tipo saludo
+		//model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Phineas_mano_M.RenderModel();
+
+
+
+		//Candace
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-35.0f, 0.0f, 20.0f));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Candace_M.RenderModel();
+
+		//Isabella
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-30.0f, 0.0f, 40.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Isabella_M.RenderModel();
+
+		//Bufard
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-26.0f, 0.0f, 64.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Bufard_M.RenderModel();
+
+		//Baljeet
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-20.0f, 0.0f, 40.0f));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Baljeet_M.RenderModel();
+
+
+
+
+		// --------------------------------------------JUEGO DE PERRY ---------------------------------------------------------------------
+
+		//Maquina de perry
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-90.0f, 0.0f, -140.0f));
+		model = glm::scale(model, glm::vec3(5.0f, 2.5f, 8.75f));
+		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		topo_machine_M.RenderModel();
+
+		//Perry
+		model = glm::mat4(1.0);
+		glm::vec3 basePos = posicionesPerry[perryActual];
+		model = glm::translate(model, glm::vec3(basePos.x, basePos.y + perryY, basePos.z));
+		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Perry_M.RenderModel();
+
+		//Carpa Perry
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-90.0f, 0.0f, -140.0f));
+		model = glm::scale(model, glm::vec3(3.75f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		carpa_perry_M.RenderModel();
+
+		//letrero perry
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-80.0f, 0.0f, -130.0f));
+		model = glm::scale(model, glm::vec3(3.75f));
+		model = glm::rotate(model, glm::radians(-80.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		letrero_perry_juego_M.RenderModel();
+
+		//Doof
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-90.0f, 0.0f, -128.0f)); // Frente a la máquina
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // Mirando hacia atrás (a la máquina)
+		model = glm::scale(model, glm::vec3(3.75f));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Doof_M.RenderModel();
+
+
+		// BICEPS (rotación local en eje X)
+		model = glm::translate(modelaux, glm::vec3(-0.497f, 2.205f, -0.066f)); // punto de unión
+		model = glm::rotate(model, glm::radians(rotBicep), glm::vec3(1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Doof_bicep_M.RenderModel();
+
+		// BRAZO (relativo al bicep)
+		model = glm::translate(model, glm::vec3(-0.232f, -0.066f, 0.602f)); // unión
+		model = glm::rotate(model, glm::radians(rotBrazo), glm::vec3(1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Doof_brazo_M.RenderModel();
+
+		// MUÑECA (relativa al brazo)
+		model = glm::translate(model, glm::vec3(-0.100f, 0.465f, 0.290f)); // unión
+		model = glm::rotate(model, glm::radians(rotMuneca), glm::vec3(1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		Doof_muneca_M.RenderModel();
+
+		// -----------------------------------------------------------------------------------------------------------------
+
+		//---------------JUEGO DE LOS GLOBOS----------------
+		// Carpa Perry
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(140.0f, 0.0f, 120.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		carpa_globo_M.RenderModel();
+
+		// Base inicial después de la carpa
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 3.2f));
+		glm::mat4 modelBase = model;
+
+		// Offsets para columnas (-1, 0, 1 en X), cada una con 3 globos apilados en Y
+		float xOffsets[] = { -1.0f, 0.0f, 1.0f };
+
+		for (int col = 0; col < 3; ++col) {
+			glm::mat4 colBase = glm::translate(modelBase, glm::vec3(xOffsets[col], 0.0f, 0.0f));
+			for (int row = 0; row < 3; ++row) {
+				if (!globos[row][col]) continue;  // No dibujar globo si está desactivado
+
+				glm::mat4 globoModel = glm::translate(colBase, glm::vec3(0.0f, row * 1.0f, 0.0f));
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(globoModel));
+				globo_M.RenderModel();
+			}
+		}
+
+		for (int col = 0; col < 3; ++col) {
+			glm::mat4 colBase = glm::translate(modelBase, glm::vec3(xOffsets[col], 0.0f, 0.0f));
+			for (int row = 0; row < 3; ++row) {
+				if (globosPonchados[row][col]) {
+					glm::mat4 globoPonchadoModel = glm::translate(colBase, glm::vec3(0.0f, row * 1.0f, 0.0f));
+					glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(globoPonchadoModel));
+					globo_ponchado_M.RenderModel();
+				}
+			}
+		}
+		if (dardoEstado == 1) {
+			rotacionDardo += velocidadRotacionDardo * deltaTime;
+			if (rotacionDardo > 360.0f) rotacionDardo -= 360.0f;
+		}
+		else if (dardoEstado == 0) {
+			rotacionDardo = 0.0f; // reinicia para cada nuevo lanzamiento
+		}
+
+		// Render dardo en movimiento
+		if (dardoEstado == 1 || dardoEstado == 2) {
+			model = glm::mat4(1.0);
+			model = glm::translate(model, posDardoActual);
+			model = glm::rotate(model, glm::radians(rotacionDardo), glm::vec3(0.0f, 0.0f, 1.0f));
+			model = glm::scale(model, glm::vec3(5.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+			dardo_M.RenderModel();
+		}
+
+
+
+
+		for (const glm::vec3& posFinal : dardosFinales) {
+			glm::mat4 modelDardoFinal = glm::mat4(1.0f);
+			modelDardoFinal = glm::translate(modelDardoFinal, posFinal);
+			modelDardoFinal = glm::scale(modelDardoFinal, glm::vec3(5.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelDardoFinal));
+			dardo_M.RenderModel();
+		}
+
+
+		//linea roja
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(140.0f, 0.0f, 110.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		linea_roja_M.RenderModel();
+
+
+		//---------------------------------------------------------
+
+
+		//Planty
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-55.0f, 0.0f, 8.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		planty_M.RenderModel();
+
+		//Ballony
+		float ballonySpinAngle = fmod(ballonyTime * 0.5f, 360.0f); // velocidad baja
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(posX, posY, posZ));
+		model = glm::scale(model, glm::vec3(15.0f));
+		model = glm::rotate(model, glm::radians(ballonySpinAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // rotación 
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		ballony_M.RenderModel();
+
+
+
+
+
+
+
+		//puesto tacos
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-45.0f, 1.2f, 50.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		puesto_tacos_M.RenderModel();
+
+		//puesto micheladas
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-30.0f, 1.2f, 62.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		puesto_miches_M.RenderModel();
+
+		model = glm::mat4(1.0);
+		model = glm::translate(model, glm::vec3(-35.0f, 1.2f, 15.0f));
+		model = glm::scale(model, glm::vec3(0.75f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		puesto_miches_M.RenderModel();
+
+
+
+
+
+		// Base del carrusel (fija)
+		glm::mat4 modelCarrusel = glm::mat4(1.0f);
+		float anguloCarrusel = fmod(tiempoCarrusel * 1.5f, 360.0f); // 18 grados por segundo
+		modelCarrusel = glm::translate(glm::mat4(1.0f), glm::vec3(-190.0f, 0.0f, -130.0f));
+		modelCarrusel = glm::scale(modelCarrusel, glm::vec3(5.0f));
+		modelCarrusel = glm::rotate(modelCarrusel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelCarrusel));
+		carrusel_M.RenderModel();
+		modelCarrusel = glm::rotate(modelCarrusel, glm::radians(anguloCarrusel), glm::vec3(0.0f, 1.0f, 0.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(modelCarrusel));
+		techo_carrusel_M.RenderModel();
+
+		const float VELOCIDAD_OSCILACION_NAVES = 0.05f;
+		const float AMPLITUD_OSCILACION_NAVES = 0.3f;
+		const float ALTURA_BASE_NAVES = 0.3f;
+
+		for (int i = 0; i < 6; i++) {
+			float offsetY = sin(tiempoCarrusel * VELOCIDAD_OSCILACION_NAVES + i) * AMPLITUD_OSCILACION_NAVES;
+
+			glm::mat4 naveModel = glm::mat4(1.0f);
+			naveModel = glm::translate(naveModel, glm::vec3(-190.0f, ALTURA_BASE_NAVES + offsetY, -130.0f));
+			naveModel = glm::scale(naveModel, glm::vec3(5.0f));
+			naveModel = glm::rotate(naveModel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			naveModel = glm::rotate(naveModel, glm::radians(anguloCarrusel), glm::vec3(0.0f, 1.0f, 0.0f));
+			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(naveModel));
+
+			switch (i) {
+			case 0: nave1_M.RenderModel(); break;
+			case 1: nave2_M.RenderModel(); break;
+			case 2: nave3_M.RenderModel(); break;
+			case 3: nave4_M.RenderModel(); break;
+			case 4: nave5_M.RenderModel(); break;
+			case 5: nave6_M.RenderModel(); break;
+			}
+		}
 
 		//JAULA DE BATEO
 		{
@@ -1614,7 +2211,7 @@ int main()
 			modelaux = model;
 			model = glm::translate(model, glm::vec3(-3.0f, -11.70f, 24.0f));
 			glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-			Espada_M.RenderModel();	
+			Espada_M.RenderModel();
 			model = modelaux;
 			modelaux = model;
 			model = glm::translate(model, glm::vec3(0.0f, -11.70f, 24.0f));
