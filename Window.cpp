@@ -1,4 +1,4 @@
-#include "Window.h"
+Ôªø#include "Window.h"
 
 Window::Window()
 {
@@ -21,10 +21,10 @@ Window::Window(GLint windowWidth, GLint windowHeight)
 }
 int Window::Initialise()
 {
-	//InicializaciÛn de GLFW
+	//Inicializaci√≥n de GLFW
 	if (!glfwInit())
 	{
-		printf("FallÛ inicializar GLFW");
+		printf("Fall√≥ inicializar GLFW");
 		glfwTerminate();
 		return 1;
 	}
@@ -44,7 +44,7 @@ int Window::Initialise()
 		glfwTerminate();
 		return 1;
 	}
-	//Obtener tamaÒo de Buffer
+	//Obtener tama√±o de Buffer
 	glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
 	//asignar el contexto
@@ -59,7 +59,7 @@ int Window::Initialise()
 
 	if (glewInit() != GLEW_OK)
 	{
-		printf("FallÛ inicializaciÛn de GLEW");
+		printf("Fall√≥ inicializaci√≥n de GLEW");
 		glfwDestroyWindow(mainWindow);
 		glfwTerminate();
 		return 1;
@@ -70,7 +70,7 @@ int Window::Initialise()
 							 
 							 //Asignar Viewport
 	glViewport(0, 0, bufferWidth, bufferHeight);
-	//Callback para detectar que se est· usando la ventana
+	//Callback para detectar que se est√° usando la ventana
 	glfwSetWindowUserPointer(mainWindow, this);
 }
 
